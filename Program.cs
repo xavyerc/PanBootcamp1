@@ -1,4 +1,6 @@
-﻿int health = 100;
+﻿using Raylib_cs;
+
+int health = 100;
 int mana = 75;
 int maxMana = 75;
 int meeleAttack = 5;
@@ -19,6 +21,7 @@ int boubbleShieldCD = 3;
 bool isBubbleShieldActive = false;
 
 int currentTurn = 0;
+var gameState = 0;
 
 void doDamage(int attack) {
  enemyHealth -= attack; // enemyHealth = enemyHealth - attack;
@@ -28,8 +31,6 @@ void doDamage(int attack) {
 void takeDamage (int attack) {
   if (!isBubbleShieldActive){
     health -= attack; // health = health - attack;
-  } else {
-    Console.WriteLine("You blocked the attack succesfully!");
   }
 }
 
@@ -53,8 +54,6 @@ void boubbleShield ()
   if (boubbleShieldInv >= 1) {
     isBubbleShieldActive = true;
     boubbleShieldInv -= 1;
-  } else {
-    Console.WriteLine("Not enough boubble shields"); //TODO add CD timer in message here
   }
   recoverMana();
 }
@@ -65,30 +64,67 @@ void regenerateBS () {
   }
 }
 
+void renderScreen () {
+  Raylib.BeginDrawing();
+  Raylib.ClearBackground(Color.Black);
+  Raylib.DrawText("Health:", 20, 20, 20, Color.Red);
+  Raylib.DrawRectangle(100, 20, health, 20, Color.Green);
+  Raylib.DrawText("Mana:", 20, 40, 20, Color.Red);
+  Raylib.DrawRectangle(100, 40, mana, 20, Color.Blue);
+  Raylib.DrawText("Shield: " + boubbleShieldInv, 20, 60, 20, Color.Red);
+
+
+  Raylib.DrawText("Enemy Health", 800, 20, 20, Color.Red);
+  Raylib.DrawRectangle(800 - enemyHealth, 20, enemyHealth, 20, Color.Green);
+  Raylib.DrawText("Enemy mana", 800, 40, 20, Color.Red);
+  Raylib.DrawRectangle(800 - enemyMana, 40, enemyMana, 20, Color.Blue);
+
+  Raylib.DrawText("Elige un ataque (meele = 1, magic = 2, Boubble shield mamalon = 3): ", 150, 250, 20, Color.Red);
+  Raylib.EndDrawing();
+}
+
+void victoryScreen () {
+  Raylib.BeginDrawing();
+  Raylib.ClearBackground(Color.Black);
+  Raylib.DrawText("Supreme Victory", 350, 250, 20, Color.Green);
+  Raylib.EndDrawing();
+
+}
+
+void deathScreen () {
+  Raylib.BeginDrawing();
+  Raylib.ClearBackground(Color.Black);
+  Raylib.DrawText("You Died", 100, 200, 200, Color.Red);
+  Raylib.EndDrawing();
+}
+
 Random rnd = new Random();
 
-while (health > 0 && enemyHealth > 0) {
-  Console.Clear();
-  Console.WriteLine("The current turn is: " + (currentTurn+1));
-  Console.WriteLine("Health: " + health + "                 Enemy health: " + enemyHealth);
-  Console.WriteLine("Mana: " + mana + "                 Enemy mana: " + enemyMana);
-  Console.WriteLine("Boubble shields available: " + boubbleShieldInv);
-  Console.WriteLine("Elige un ataque (meele = 1, magic = 2, Boubble shield mamalon = 3): ");
-  string selection = Console.ReadLine();
-  if (selection == "2") { //TODO change if to switch
+Raylib.InitWindow(1000, 500, "RPG - Poketemu");
+Raylib.SetTargetFPS(60);
+float timer = 0f;
+int x = 1000;
+
+while (!Raylib.WindowShouldClose())
+{
+  switch (gameState) {
+    case 0: renderScreen(); break;
+    case 1: victoryScreen(); break;
+    case 2: deathScreen(); break;
+  }
+
+    var selection = Raylib.GetKeyPressed();
+    if (selection == '2') { //TODO change if to switch
     if (mana >= manaCost) {
       doDamage(magicAttack);
       mana -= manaCost;
     } else {
-      Console.WriteLine("Not enough mana");
     }
-  } else if (selection == "1") {
+  } else if (selection == '1') {
     doDamage(meeleAttack);
-  } else if (selection == "3"){
+  } else if (selection == '3'){
     boubbleShield();
   } else {
-    Console.WriteLine("Invalid option, press enter to continue...");
-    Console.ReadLine();
     continue;
   }
 
@@ -99,7 +135,6 @@ while (health > 0 && enemyHealth > 0) {
       takeDamage(enemyMagicAttack);
       enemyMana -= manaCost;
     } else {
-      Console.WriteLine("Not enough mana");
     }
   } else if (enemySelection == 1) {
     enemyRecoverMana();
@@ -110,11 +145,19 @@ while (health > 0 && enemyHealth > 0) {
   regenerateBS();
 
   currentTurn += 1;
-}
 
-if (health <= 0) {
-  Console.WriteLine("You died!");
-} else if (enemyHealth <= 0) {
-  Console.WriteLine("You win!");
-}
+  if (health <= 0) {
+    gameState = 2;
+  } else if (enemyHealth <= 0) {
+    gameState = 1;
+  }
+
+  //   timer += Raylib.GetFrameTime();
+
+  // if (timer >= 0.5f) {
+  //   x -= 10;
+  //   timer = 0f;
+  }
+
+Raylib.CloseWindow();
 
