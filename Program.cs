@@ -94,20 +94,27 @@ void renderScreen () {
   Raylib.BeginDrawing();
   Raylib.ClearBackground(Color.Black);
 
-  Raylib.DrawText("Health:", 20, 20, 20, Color.Green);
-  if (health > 20) Raylib.DrawRectangle(100, 20, health, 20, Color.Green) ; else Raylib.DrawRectangle(100, 20, health, 20, Color.Red);
+  Color currentRenderColor = Color.Green;
+
+  Raylib.DrawText("Health:", 20, 20, 20, currentRenderColor);
+  if (health > 20) currentRenderColor = Color.Green ; else currentRenderColor = Color.Red;
+  Raylib.DrawRectangle(100, 20, health, 20, currentRenderColor);
 
   Raylib.DrawText("Mana:", 20, 40, 20, Color.Green);
-  if (mana < manaCost) Raylib.DrawRectangle(100, 40, mana, 20, Color.Red) ; else Raylib.DrawRectangle(100, 40, mana, 20, Color.Blue);
+  if (mana < manaCost) currentRenderColor =  Color.Red; else currentRenderColor = Color.Blue;
+  Raylib.DrawRectangle(100, 40, mana, 20, currentRenderColor);
 
-  if (boubbleShieldInv > 0) Raylib.DrawText("Shield: " + boubbleShieldInv, 20, 60, 20, Color.Green) ; else Raylib.DrawText("Shield: " + boubbleShieldInv, 20, 60, 20, Color.Red);
+  if (boubbleShieldInv > 0) currentRenderColor = Color.Green; else currentRenderColor = Color.Red;
+  Raylib.DrawText("Shield: " + boubbleShieldInv, 20, 60, 20, currentRenderColor);
 
   Raylib.DrawText("Enemy Health", 800, 20, 20, Color.Blue);
-  if (enemyHealth > 20) Raylib.DrawRectangle(800 - enemyHealth, 20, enemyHealth, 20, Color.Green) ; else Raylib.DrawRectangle(800 - enemyHealth, 20, enemyHealth, 20, Color.Red);
+  if (enemyHealth > 20) currentRenderColor = Color.Green; else currentRenderColor = Color.Red;
+  Raylib.DrawRectangle(800 - enemyHealth, 20, enemyHealth, 20, currentRenderColor);
 
   Raylib.DrawText("Enemy mana", 800, 40, 20, Color.Blue);
-  if (10 < manaCost) Raylib.DrawRectangle(800 - enemyMana, 40, enemyMana, 20, Color.Red) ; Raylib.DrawRectangle(800 - enemyMana, 40, enemyMana, 20, Color.Blue);
-  
+  if (enemyMana < manaCost) currentRenderColor = Color.Red; else currentRenderColor =  Color.Blue;
+  Raylib.DrawRectangle(800 - enemyMana, 40, enemyMana, 20, currentRenderColor);
+
   Raylib.DrawText("Elige un ataque (meele = 1, magic = 2, Boubble shield mamalon = 3): ", 150, 250, 20, Color.Red);
 
   Raylib.EndDrawing();
