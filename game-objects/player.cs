@@ -1,3 +1,4 @@
+using Raylib_cs;
 public class Player {
   // Atributos
   public int Health { get; set; }
@@ -11,10 +12,10 @@ public class Player {
   public int BoubbleShieldMax { get; set; }
   public int BoubbleShieldCD { get; set; }
   public bool IsBubbleShieldActive { get; set; }
-
-  public Player () {
-    Health = 100;
-  }
+  public int PositionX { get; set; }
+  public int PositionY { get; set; }
+  public List<Fireball> Fireballs { get; set; }
+  public BubbleShield Shield { get; set; }
 
   public Player(
     int health,
@@ -40,15 +41,25 @@ public class Player {
     BoubbleShieldMax = boubbleShieldMax;
     BoubbleShieldCD = boubbleShieldCD;
     IsBubbleShieldActive = isBubbleShieldActive;
+    PositionX = 30;
+    PositionY = 236;
+    Fireballs = [];
+    Shield = new BubbleShield(PositionX + 35, PositionY + 35, AttackType.BUBBLE_SHIELD);
   }
 
   //Methods
   public int Attack (AttackType selection) {
+    Fireball fb;
+    IsBubbleShieldActive = false;
     if (selection == AttackType.MEELE_ATTACK) {
       RecoverMana();
+      fb = new Fireball(PositionX + 64 + 40, PositionY + 25, AttackType.MEELE_ATTACK);
+      Fireballs.Add(fb);
       return MeeleAttack;
     } else if (selection == AttackType.MAGIC_ATTACK && (Mana >= ManaCost)) {
       Mana -= ManaCost;
+      fb = new Fireball(PositionX + 64 + 40, PositionY + 25, AttackType.MAGIC_ATTACK);
+      Fireballs.Add(fb);
       return MagicAttack;
     } else {
       return 0;
@@ -86,6 +97,29 @@ public class Player {
       return true;
     } else {
       return false;
+    }
+  }
+
+  public void Draw(Texture2D sprite) {
+    Raylib.DrawTexture(sprite, 30, 236, Color.White);
+    if (Fireballs.Count > 0) {
+      List<int> fbToDeletes = [];
+      int i = 0;
+      foreach (var fb in Fireballs)
+      {
+        fb.Draw();
+        if (fb.PositionX > 1050) {
+          fbToDeletes.Add(i);
+        }
+        i++;
+      }
+      foreach(var fbsToDelete in fbToDeletes) {
+        Fireballs.RemoveAt(fbsToDelete);
+      }
+    }
+    Raylib.DrawText("Fireballs: " + Fireballs.Count, 10, 400, 20, Color.Red);
+    if (IsBubbleShieldActive && Shield != null) {
+      Shield.Draw();
     }
   }
 }
