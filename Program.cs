@@ -1,7 +1,15 @@
 ﻿//Libs
 using Raylib_cs;
 
-//Player variables
+//Game settings and variables
+int winHeight = 500;
+int winWidth = 1000;
+Raylib.InitWindow(winWidth, winHeight, "RPG - Poketemu");
+int fpsTarget = 60;
+Random rnd = new Random();
+Raylib.SetTargetFPS(fpsTarget);
+
+//Class variables
 Player player1 = new(
   100,
   75,
@@ -30,20 +38,28 @@ Enemy enemy = new (
 int currentTurn = 0;
 var gameState = 0;
 
-//Game settings and variables
-int winHeight = 500;
-int winWidth = 1000;
-int fpsTarget = 60;
-Random rnd = new Random();
-Raylib.InitWindow(winWidth, winHeight, "RPG - Poketemu");
-Raylib.SetTargetFPS(fpsTarget);
+// Textures
+var skyTexture = Raylib.LoadTexture("assets/sky.jpg");
+var grassTexture = Raylib.LoadTexture("assets/grass.jpg");
+var catPlayer = Raylib.LoadTexture("assets/cat.png");
+var frogEnemy = Raylib.LoadTexture("assets/frog.png");
+var floor = new Rectangle(100, 300, 1000, 200);
+var sky = new Rectangle(0, 0, 1000, 300);
+Color skyColor = new Color(0, 0, 255, 150);
 
 //------------Functions------------//
 
-void renderScreen () {
+void drawBackground () {
+  Raylib.DrawTextureRec(grassTexture, floor, new System.Numerics.Vector2(0, 300), Color.Green);
+  Raylib.DrawTextureRec(skyTexture, sky, new System.Numerics.Vector2(0, 0), skyColor);
+}
 
+void renderScreen () {
   Raylib.BeginDrawing();
   Raylib.ClearBackground(Color.Black);
+  drawBackground();
+  player1.Draw(catPlayer);
+  enemy.Draw(frogEnemy);
 
   Color currentRenderColor = Color.Green;
 
@@ -66,7 +82,7 @@ void renderScreen () {
   if (enemy.Mana < enemy.ManaCost) currentRenderColor = Color.Red; else currentRenderColor =  Color.Blue;
   Raylib.DrawRectangle(800 - enemy.Mana, 40, enemy.Mana, 20, currentRenderColor);
 
-  Raylib.DrawText("Elige un ataque (meele = 1, magic = 2, Boubble shield mamalon = 3): ", 150, 250, 20, Color.Red);
+  Raylib.DrawText("Elige un ataque (meele = 1, magic = 2, Boubble shield mamalon = 3): ", 150, 150, 20, Color.Red);
 
   Raylib.EndDrawing();
 }
@@ -108,7 +124,6 @@ while (!Raylib.WindowShouldClose()) {
     default: continue;
   }
 
-  player1.IsBubbleShieldActive = false;
   player1.RegenerateBS(currentTurn);
   currentTurn += 1;
 

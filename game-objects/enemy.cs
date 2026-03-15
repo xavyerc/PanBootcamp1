@@ -1,3 +1,5 @@
+using Raylib_cs;
+
 public class Enemy {
   // Atributos
   public int Health { get; set; }
@@ -57,5 +59,9 @@ public class Enemy {
     } else {
       return false;
     }
+  }
+
+   public void Draw(Texture2D sprite) {
+    Raylib.DrawTexture(sprite, 900, 236, Color.White);
   }
 }
