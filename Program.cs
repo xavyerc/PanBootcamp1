@@ -30,7 +30,7 @@ List<Enemy> enemies = new List<Enemy>();
 for (int i = 0; i < 10; i++)
 {
   var enemy = new Enemy(
-    20,
+    120,
     120,
     100,
     100,
@@ -55,8 +55,9 @@ var camY = player1.PositionY;
 // Textures
 var skyTexture = Raylib.LoadTexture("assets/sky.jpg");
 var grassTexture = Raylib.LoadTexture("assets/grass.jpg");
-var catPlayer = Raylib.LoadTexture("assets/cat.png");
+var catPlayer = Raylib.LoadTexture("assets/cat2.png");
 var frogEnemy = Raylib.LoadTexture("assets/frog.png");
+var deadEnemy = Raylib.LoadTexture("assets/skull.png");
 var terrain = Raylib.LoadTexture("assets/terrain.png"); // 1800, 1200
 var floor = new Rectangle(100, 300, 1000, 200);
 var terrainRec = new Rectangle(0, 0, 1800, 1200);
@@ -99,7 +100,6 @@ void renderScreen () {
   Raylib.DrawRectangle(800 - currentEnemy.Mana, 40, currentEnemy.Mana, 20, currentRenderColor);
 
   Raylib.DrawText("Elige un ataque (meele = 1, magic = 2, Boubble shield mamalon = 3): ", 150, 150, 20, Color.Red);
-  Raylib.DrawText("Current Enemy Is DEad: " + currentEnemy.IsDead + "Index: " + currentEnemyIndex, 10, 350, 50, Color.Red);
 
   Raylib.EndDrawing();
 }
@@ -133,30 +133,18 @@ void drawOverworld ()
   foreach (var enemy in enemies)
   {
     var enemyRec = new Rectangle(enemy.PositionX, enemy.PositionY, 64, 64);
-    enemy.Draw(frogEnemy, gameState);
+    enemy.Draw(enemy.IsDead ? deadEnemy : frogEnemy, gameState);
     var isCollision = Raylib.CheckCollisionRecs(playerRec, enemyRec) && !enemy.IsDead;
     if (isCollision)
     {
       currentEnemy = enemies[i];
       currentEnemyIndex = i;
-      player1.PositionX = 30;
-      player1.PositionY = 236;
       gameState = 0;
     }
     i++;
   }
   Raylib.EndMode2D();
   Raylib.EndDrawing();
-}
-
-void resetCharacterStats (Character character)
-{
-  character.Health = character.MaxHealth;
-  character.Mana = character.MaxMana;
-  if (character is Player player)
-  {
-    player.BoubbleShieldInv = 2;
-  }
 }
 
 while (!Raylib.WindowShouldClose()) {
@@ -187,12 +175,11 @@ while (!Raylib.WindowShouldClose()) {
   currentTurn += 1;
 
   if (player1.GetIsDead()) {
-    resetCharacterStats(player1);
-    resetCharacterStats(currentEnemy);
-    gameState = 3;
+    player1.ResetStats();
+    currentEnemy.ResetStats();
   } else if (currentEnemy.GetIsDead()) {
-    resetCharacterStats(player1);
     enemies[currentEnemyIndex].IsDead = true;
+    player1.ResetStats();
     gameState = 3;
   }
 }

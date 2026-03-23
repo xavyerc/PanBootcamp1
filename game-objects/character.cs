@@ -43,10 +43,17 @@ public class Character
 
   public bool GetIsDead () {
     if (Health <= 0) {
+      IsDead = true;
       return true;
     } else {
       return false;
     }
+  }
+
+  public virtual void ResetStats ()
+  {
+    Health = MaxHealth;
+    Mana = MaxMana;
   }
 
   public virtual void Draw(Texture2D sprite, int gameState) {
