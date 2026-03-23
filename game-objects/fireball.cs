@@ -24,12 +24,18 @@ public class Fireball { //TODO @Diablo must refactor names.
     AttackSprite = Raylib.LoadTexture(sprites[(int)attackType]);
     SpriteRect = new Rectangle(PositionX, PositionY, 64, 64);
     PositionVector = new Vector2(PositionX, PositionY);
-    
+
   }
 
-  public void Draw() {
+  public void Draw(CharacterType characterType) {
     PositionVector = new Vector2(PositionX, PositionY);
     Raylib.DrawTextureRec(AttackSprite, SpriteRect, PositionVector, Color.White);
-    PositionX += 10;
+    if(characterType == CharacterType.PLAYER)
+    {
+      PositionX += 10;
+    } else if (characterType == CharacterType.ENEMY)
+    {
+      PositionX -= 10;
+    }
   }
 }
