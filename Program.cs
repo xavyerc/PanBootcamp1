@@ -51,6 +51,7 @@ var gameState = 3;
 var cameraInsideLimit = new Rectangle(500, 250, 1800 - 500, 1200 - 250);
 var camX = player1.PositionX;
 var camY = player1.PositionY;
+var canCollide = true;
 
 // Textures
 var skyTexture = Raylib.LoadTexture("assets/sky.jpg");
@@ -134,12 +135,17 @@ void drawOverworld ()
   {
     var enemyRec = new Rectangle(enemy.PositionX, enemy.PositionY, 64, 64);
     enemy.Draw(enemy.IsDead ? deadEnemy : frogEnemy, gameState);
-    var isCollision = Raylib.CheckCollisionRecs(playerRec, enemyRec) && !enemy.IsDead;
-    if (isCollision)
+    var isCollision = Raylib.CheckCollisionRecs(playerRec, enemyRec);
+    if (isCollision && !enemy.IsDead && canCollide)
     {
       currentEnemy = enemies[i];
       currentEnemyIndex = i;
       gameState = 0;
+      canCollide = false;
+    } 
+    else if (!isCollision && !enemy.IsDead && !canCollide && i == currentEnemyIndex)
+    {
+      canCollide = true;
     }
     i++;
   }
@@ -177,6 +183,7 @@ while (!Raylib.WindowShouldClose()) {
   if (player1.GetIsDead()) {
     player1.ResetStats();
     currentEnemy.ResetStats();
+    gameState = 3;
   } else if (currentEnemy.GetIsDead()) {
     enemies[currentEnemyIndex].IsDead = true;
     player1.ResetStats();
