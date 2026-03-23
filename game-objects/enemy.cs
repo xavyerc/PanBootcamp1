@@ -18,6 +18,7 @@ public class Enemy : Character {
     var y = rnd.Next(1200 - 64);
 
     Health = health;
+    MaxHealth = maxHealth;
     Mana = mana;
     MaxMana = maxMana;
     MeeleAttack = meeleAttack;

@@ -23,6 +23,7 @@ public class Player : Character {
     bool isBubbleShieldActive
   ) {
     Health = health;
+    MaxHealth = maxHealth;
     Mana = mana;
     MaxMana = maxMana;
     MeeleAttack = meeleAttack;
@@ -38,7 +39,7 @@ public class Player : Character {
     FightPositionX = 30;
     FightPositionY = 236;
     Fireballs = [];
-    Shield = new BubbleShield(PositionX + 35, PositionY + 35, AttackType.BUBBLE_SHIELD);
+    Shield = new BubbleShield(FightPositionX + 35, FightPositionY + 35, AttackType.BUBBLE_SHIELD);
     characterType = CharacterType.PLAYER;
   }
 
@@ -82,6 +83,12 @@ public class Player : Character {
     if (Raylib.IsKeyDown(KeyboardKey.D) && PositionX < 1800 -64) {
       PositionX += 3;
     }
+  }
+
+  public override void ResetStats()
+  {
+    base.ResetStats();
+    BoubbleShieldInv = 2;
   }
 
   public override void Draw(Texture2D sprite, int gameState) {
